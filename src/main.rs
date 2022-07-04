@@ -1,7 +1,7 @@
 use std::env;
 use std::fs;
-use crate::chrono::{DateTime};
-use crate::chrono::format::ParseError;
+use chrono::{DateTime, NaiveDate, NaiveDateTime, NaiveTime};
+use chrono::format::ParseError;
 //Verify Commit test attempt2
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -16,14 +16,26 @@ fn main() {
     let mut i = 0;
     for line in rows{
         if i > 5{
-            break;
+            return;
         }
-        let cols = contents.split(",");
+        let cols = line.split(",");
         i+=1;
         for item in cols{
             println!("{}", item);
+            parseDate(item);
         }
     }
 
     //println!("With text:\n{}", contentsArr[0]);
+}
+
+
+fn parseDate(dateStr : &str) -> Result<NaiveDate, ParseError>{
+
+    let date_only = NaiveDate::parse_from_str(dateStr, "%m/%d/%Y")?;
+    println!("{}", date_only);
+
+
+    Ok(date_only)
+
 }
