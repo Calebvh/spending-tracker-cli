@@ -15,26 +15,28 @@ fn main() {
     let rows = contents.split("\n");
     let mut i = 0;
     for line in rows{
-        if i > 5{
+        if i > 2{
             return;
         }
-        let cols = line.split(",");
+        let cols: Vec<&str> = line.split(",").collect();
         i+=1;
-        for item in cols{
-            println!("{}", item);
-            parseDate(item);
+
+        match parse_date(&cols[0].replace("\"", "")) {
+            Ok(description) => println!("{}", description),
+            Err(err) => println!("Parsing Date: {} {}", &cols[0], err),
         }
     }
+}
 
-    //println!("With text:\n{}", contentsArr[0]);
+fn print_type_of<T>(_: &T) {
+    println!("{}", std::any::type_name::<T>())
 }
 
 
-fn parseDate(dateStr : &str) -> Result<NaiveDate, ParseError>{
 
-    let date_only = NaiveDate::parse_from_str(dateStr, "%m/%d/%Y")?;
-    println!("{}", date_only);
+fn parse_date(date_str : &str) -> Result<NaiveDate, ParseError>{
 
+    let date_only = NaiveDate::parse_from_str(date_str, "%m/%d/%Y")?;
 
     Ok(date_only)
 
