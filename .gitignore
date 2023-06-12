@@ -15,3 +15,7 @@ config/*
 #Testfile(s)
 *.csv
 *.exe
+
+#Ignore all chromedriver files
+chromedriver.exe
+*.chromedriver
