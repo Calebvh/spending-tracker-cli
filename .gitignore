@@ -10,12 +10,12 @@ Cargo.lock
 **/*.rs.bk
 
 # Ignore everything in the config folder
-config/*
+src/config/*
 
 #Testfile(s)
 *.csv
 *.exe
 
 #Ignore all chromedriver files
-chromedriver.exe
+chromedriver
 *.chromedriver
