@@ -6,17 +6,15 @@ import (
 	"os"
 )
 
-type TransactionType int64
-const (
-	DEBIT TransactionType= iota
-	CREDIT
-)
-
 
 struct Transaction {
 	date string
 	description string
+	tType TransactionType
+	category TransactionCategory
 )
+
+
 
 
 func ReadCSVFile(filename string) [][]string {
