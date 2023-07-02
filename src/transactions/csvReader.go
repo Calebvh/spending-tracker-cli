@@ -9,6 +9,8 @@ import (
 )
 
 func ReadCSVFile(filename string) []Transaction {
+	transactions := make([]Transaction, 0)
+
 	f, err := os.Open(filename)
 	if err != nil {
 		panic(err)
@@ -21,7 +23,8 @@ func ReadCSVFile(filename string) []Transaction {
 	}
 
 	for _, line := range lines {
-		fmt.Println(line)
+		transactions = append(transactions, HandleLine(line))
+		
 	}
 
 	return nil

@@ -2,6 +2,7 @@ package transactions
 
 import (
 	"time"
+	"fmt"
 )
 
 type TransactionType int64
@@ -45,4 +46,14 @@ type Transaction struct {
 	category    TransactionCategory
 	amount      float64
 	note        string
+}
+
+func printTransaction(transaction Transaction) {
+	fmt.Println("Transaction Details:")
+	fmt.Println("Date:", transaction.date.Format("02/01/2006"))
+	fmt.Println("Description:", transaction.description)
+	fmt.Println("Type:", transaction.tType)
+	fmt.Println("Category:", transaction.category)
+	fmt.Println("Amount:", transaction.amount)
+	fmt.Println("Note:", transaction.note)
 }
