@@ -10,7 +10,7 @@ Cargo.lock
 **/*.rs.bk
 
 # Ignore everything in the config folder
-src/config/*
+src/config/config.ini
 
 #Testfile(s)
 *.csv
