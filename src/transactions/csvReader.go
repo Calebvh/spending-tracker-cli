@@ -2,11 +2,66 @@ package transactions
 
 import (
 	"encoding/csv"
-	"fmt"
+	"errors"
+	"log"
 	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 )
+
+func ReadTransactions(folderPath string) []Transaction {
+	listOfCSVFiles, err := FindCSVFiles(folderPath)
+	if err != nil {
+		log.Fatal(err)
+		return nil
+	}
+
+	transactions := make([]Transaction, 0)
+	for _, csvFile := range listOfCSVFiles {
+		transactions = append(transactions, ReadCSVFile(csvFile)...)
+	}
+
+	return transactions
+}
+
+func FindCSVFiles(folderPath string) ([]string, error) {
+	//Given the path to a folder, read all the csv files in the folder and return a slice of transactions
+	//List all files in the folder
+	log.Println("Looking for files in: " + folderPath)
+	var filePaths []string
+
+	// Open the folder
+	dir, err := os.Open(folderPath)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	defer dir.Close()
+
+	// Read the folder contents
+	files, err := dir.Readdir(-1)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	// Iterate over the files
+	for _, file := range files {
+		if !file.IsDir() {
+			// Check if the file has a .csv extension
+			if strings.HasSuffix(file.Name(), ".csv") {
+				// Build the full file path
+				filePath := filepath.Join(folderPath, file.Name())
+				filePaths = append(filePaths, filePath)
+				log.Println("Found file: " + filePath)
+			}
+		}
+	}
+	return filePaths, nil
+
+}
 
 func ReadCSVFile(filename string) []Transaction {
 	transactions := make([]Transaction, 0)
@@ -22,15 +77,22 @@ func ReadCSVFile(filename string) []Transaction {
 		panic(err)
 	}
 
+	counter := 0
 	for _, line := range lines {
-		transactions = append(transactions, HandleLine(line))
-		
+		transaction, err := HandleLine(line)
+		if err != nil {
+			log.Printf("Error parsing line: %s with error: %s", line, err.Error())
+		} else {
+			transactions = append(transactions, transaction)
+			counter++
+		}
 	}
+	log.Printf("Read %d transactions from %s", counter, filename)
 
-	return nil
+	return transactions
 }
 
-func HandleLine(line []string) Transaction {
+func HandleLine(line []string) (Transaction, error) {
 	//line[0] = date
 	//line[1] = description
 	//line[2] = original description
@@ -42,9 +104,9 @@ func HandleLine(line []string) Transaction {
 	//line[8] = notes
 
 	// Parse date
-	date, err := time.Parse("01/02/2006", line[0])
+	date, err := time.Parse("1/02/2006", line[0])
 	if err != nil {
-		panic("Error parsing date: " + err.Error())
+		return Transaction{}, errors.New("Error parsing date: " + err.Error())
 	}
 
 	description := line[1]
@@ -52,7 +114,7 @@ func HandleLine(line []string) Transaction {
 	//Parse amount
 	amount, err := strconv.ParseFloat(line[3], 64)
 	if err != nil {
-		panic("Error parsing amount: " + err.Error())
+		return Transaction{}, errors.New("Error parsing amount: " + err.Error())
 	}
 
 	//Parse transaction type
@@ -112,6 +174,6 @@ func HandleLine(line []string) Transaction {
 		category = UNCATEGORIZED
 	}
 
-	return Transaction{date, description, tType, category, amount, ""}
+	return Transaction{date, description, tType, category, amount, ""}, nil
 
 }
