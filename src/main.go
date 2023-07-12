@@ -7,11 +7,18 @@ import (
 	"strings"
 
 	"github.com/Calebvh/spending-tracker-cli/config"
+	"github.com/Calebvh/spending-tracker-cli/logger"
 	"github.com/Calebvh/spending-tracker-cli/transactions"
 )
 
 func main() {
-
+	//Initialize logger
+	loggerConfig := config.ReadLoggerConfig()
+	logger.SetLogConfig(loggerConfig.LogLevel, loggerConfig.DebugMode, loggerConfig.WarningMode)
+	logger.Debug("Logger initialized")
+	logger.Error("Logger initialized")
+	logger.Info("Logger initialized")
+	logger.Warning("Logger initialized")
 	for {
 		showMenu()
 
@@ -23,7 +30,7 @@ func main() {
 
 		switch choice {
 		case "1":
-			config := config.ReadConfig()
+			config := config.ReadTransactionConfig()
 			println(config)
 			transactions.ReadTransactions(config.TransactionFolder)
 
